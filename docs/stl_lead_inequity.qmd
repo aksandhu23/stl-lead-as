@@ -1,0 +1,56 @@
+---
+title: "Lead Inequity"
+author: "Amritpal Sandhu"
+format: html
+editor: visual
+---
+
+## Hello 
+
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+```{r}
+stl_lead <- read_csv(here::here("data", "stl_blood_lead.csv"))
+
+names(stl_lead)
+```
+
+```{r}
+stl_lead_clean <- stl_lead %>% 
+  clean_names()
+
+names(stl_lead_clean)
+```
+
+```{r}
+stl_lead_prop <- stl_lead_clean %>% 
+  mutate(prop_white = (white / total_pop) * 100)
+```
+
+```{r}
+graph_levels <- ggplot(data = stl_lead_clean, aes(x = pct_elevated, y = white)) + geom_point(aes(color = poverty_tot)) + scale_color_gradient(low = "green", high = "red") +
+  labs(x = "Percentage of children", y = "Population of white children", title = "Percentage of children vs Population of white children")
+
+graph_levels
+```
+
+```{r}
+ggsave(plot = graph_levels, here::here("figs", "percentage_lead_in_white_children.png"), width = 8, height = 5)
+```
+
+```{r}
+white_lead_histogram <- ggplot(data = stl_lead_clean,  
+                               aes(x = pct_elevated)) + 
+  stat_bin(bins = 30) +
+  geom_histogram(fill = "orange", 
+                 color = "blue")
+
+white_lead_histogram
+```
+
+```{r}
+ggsave(plot = white_lead_histogram, here::here("figs", "elevated_histogram.png"))
+```
